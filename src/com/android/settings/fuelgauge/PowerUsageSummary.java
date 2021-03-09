@@ -119,6 +119,8 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
     boolean mNeedUpdateBatteryTip;
     @VisibleForTesting
     BatteryTipPreferenceController mBatteryTipPreferenceController;
+    @VisibleForTesting
+    BatteryHeaderPreferenceController mBatteryHeaderPreferenceController;
 
     @VisibleForTesting
     final ContentObserver mSettingsObserver = new ContentObserver(new Handler()) {
@@ -139,7 +141,7 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
 
                 @Override
                 public void onLoadFinished(Loader<BatteryInfo> loader, BatteryInfo batteryInfo) {
-                    updateHeaderPreference(batteryInfo);
+                    mBatteryHeaderPreferenceController.updateHeaderPreference(batteryInfo);
                     mBatteryInfo = batteryInfo;
                     updateLastFullChargePreference();
                 }
@@ -219,6 +221,11 @@ public class PowerUsageSummary extends PowerUsageBase implements OnLongClickList
         final SettingsActivity activity = (SettingsActivity) getActivity();
 
         mPowerManager = context.getSystemService(PowerManager.class);
+        
+        mBatteryHeaderPreferenceController = use(BatteryHeaderPreferenceController.class);
+        mBatteryHeaderPreferenceController.setActivity(activity);
+        mBatteryHeaderPreferenceController.setFragment(this);
+        mBatteryHeaderPreferenceController.setLifecycle(getSettingsLifecycle());
 
         mBatteryTipPreferenceController = use(BatteryTipPreferenceController.class);
         mBatteryTipPreferenceController.setActivity(activity);
